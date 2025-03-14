@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase List</title>
+    <script>
+        // Function to confirm delete action
+        function confirmDelete(purchaseId) {
+            if (confirm("Are you sure you want to delete this purchase? This action cannot be undone.")) {
+                window.location.href = "/purchases/" + purchaseId + "/delete/";
+            }
+        }
+
+        // Show confirmation for changing category or unit
+        function confirmChange() {
+            const categorySelect = document.getElementById("category");
+            const unitSelect = document.getElementById("unit");
+
+            if (categorySelect.selectedIndex !== categorySelect.getAttribute('data-original-index') ||
+                unitSelect.selectedIndex !== unitSelect.getAttribute('data-original-index')) {
+                return confirm("Are you sure you want to change the category or unit? This will affect inventory and sales.");
+            }
+            return true;
+        }
+
+        // Function to update category and unit based on selected item
+        function updateCategoryAndUnit() {
+            const itemSelect = document.getElementById("item");
+            const selectedItem = itemSelect.options[itemSelect.selectedIndex];
+            const categorySelect = document.getElementById("category");
+            const unitSelect = document.getElementById("unit");
+
+            // Set category and unit to match selected item
+            categorySelect.value = selectedItem.getAttribute("data-category");
+            unitSelect.value = selectedItem.getAttribute("data-unit");
+
+            // Store original values for comparison during form submission
+            categorySelect.setAttribute('data-original-index', categorySelect.selectedIndex);
+            unitSelect.setAttribute('data-original-index', unitSelect.selectedIndex);
+        }
+    </script>
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .form-row label {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .form-row input,
+        .form-row select {
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .form-row button {
+            flex: 1;
+            padding: 8px 16px;
+            background-color: #0062cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-row button:hover {
+            background-color: #004085;
+        }
+
+        .purchase-list {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .purchase-list table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .purchase-list th, .purchase-list td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .purchase-list th {
+            background-color: #333;
+            color: white;
+        }
+
+        .purchase-list tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .purchase-list tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .search-bar {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .search-bar input {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-bar button {
+            flex: 1;
+            padding: 8px 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #218838;
+        }
+
+        .back-button {
+            padding: 8px 16px;
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #e0a800;
+        }
+
+        .delete-btn {
+            padding: 8px 16px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .add-btn {
+            padding: 8px 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background-color: #218838;
+        }
+
+        .dashboard-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .dashboard-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Victorious Saloon - Purchase Management</h1>
+    </header>
+
+    <a href="{% url 'dashboard' %}" class="dashboard-btn">Go to Dashboard</a>
+
+    <div class="container">
+        <h2>All Purchases</h2>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search by item, supplier, etc." />
+            <button type="button" onclick="searchPurchases()">Search</button>
+        </div>
+
+        <!-- Add New Purchase Form -->
+        <div class="add-purchase-section">
+            <h3>Add New Purchase</h3>
+            <form method="POST" action="{% url 'purchases:create' %}" onsubmit="return confirmChange()">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div>
+                        <label for="item">Item:</label>
+                        <select id="item" name="inventory_item" required onchange="updateCategoryAndUnit()">
+                            {% for item in inventory_items %}
+                                <option value="{{ item.id }}" data-category="{{ item.category.id }}" data-unit="{{ item.unit.id }}">
+                                    {{ item.item_name }} ({{ item.category.name }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="supplier">Supplier:</label>
+                        <select id="supplier" name="supplier" required>
+                            {% for supplier in suppliers %}
+                                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" required>
+                    </div>
+
+                    <div>
+                        <label for="price">Purchase Price:</label>
+                        <input type="number" id="price" name="purchase_price" step="0.01" required>
+                    </div>
+
+                    <div>
+                        <label for="unit">Original Units:</label>
+                        <select id="unit" name="unit" required>
+                            {% for unit in units %}
+                                <option value="{{ unit.id }}">{{ unit.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="category">Original Categories:</label>
+                        <select id="category" name="category" required>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <button class="add-btn" type="submit">Add Purchase</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Purchase List Table -->
+        <div class="purchase-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Supplier</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Unit</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in purchases %}
+                    <tr>
+                        <td>{{ purchase.inventory_item.item_name }} ({{ purchase.inventory_item.category.name }})</td>
+                        <td>{{ purchase.supplier.name }}</td>
+                        <td>{{ purchase.quantity }}</td>
+                        <td>{{ purchase.purchase_price|floatformat:2 }}</td>
+                        <td>{{ purchase.unit.name }}</td>
+                        <td>{{ purchase.category.name }}</td>
+                        <td>{{ purchase.purchase_date }}</td>
+                        <td>
+                            <button class="delete-btn" onclick="confirmDelete({{ purchase.id }})">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

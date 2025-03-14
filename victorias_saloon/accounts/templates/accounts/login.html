@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victorious Salon Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffe6f2;
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .card-header {
+            background-color: #ff66b3;
+            color: white;
+            font-size: 1.5rem;
+            animation: slideDown 1s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #ff66b3;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #e55a9e;
+        }
+        .btn-secondary {
+            background-color: #ffccdf;
+            border: none;
+            color: #ff66b3;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #ffb3d9;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header text-center">
+                        <h1>Welcome to Victorious Salon</h1>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert" style="animation: fadeIn 0.8s ease-in-out;">
+                                {% for message in messages %}{{ message }}{% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+
+                        <form method="POST" style="animation: fadeIn 0.8s ease-in-out;">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username:</label>
+                                <input type="text" name="username" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password:</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </div>
+                        </form>
+
+                        {% if messages and 'Invalid credentials' in messages %}
+                            <div class="d-grid gap-2 mt-3" style="animation: fadeIn 0.8s ease-in-out;">
+                                <button type="reset" class="btn btn-secondary">Try Again</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

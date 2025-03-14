@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Sale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            padding: 8px;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .btn-primary {
+            display: block;
+            text-align: center;
+            background: #007bff;
+            padding: 10px;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .dashboard-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .dashboard-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+    <script>
+        function updateSellingPrice(selectElement) {
+            let price = selectElement.options[selectElement.selectedIndex].getAttribute("data-price");
+            let row = selectElement.closest("tr");
+            row.querySelector(".selling-price").value = price;
+            updateRowTotal(row.querySelector(".quantity-input"));
+        }
+
+        function updateRowTotal(quantityInput) {
+            let row = quantityInput.closest("tr");
+            let quantity = parseFloat(quantityInput.value) || 0;
+            let price = parseFloat(row.querySelector(".selling-price").value) || 0;
+            let total = quantity * price;
+            row.querySelector(".row-total").value = total.toFixed(2);
+            updateTotalAmount();
+        }
+
+        function updateTotalAmount() {
+            let total = 0;
+            document.querySelectorAll(".row-total").forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById("total_amount").value = total.toFixed(2);
+            updateBalance();
+        }
+
+        function updateBalance() {
+            let total = parseFloat(document.getElementById("total_amount").value) || 0;
+            let paid = parseFloat(document.getElementById("amount_paid").value) || 0;
+            let balance = total - paid;
+            document.getElementById("balance").value = balance.toFixed(2);
+        }
+
+        function addItemRow() {
+            let table = document.getElementById("sale-items");
+            let firstRow = table.rows[1];
+            let newRow = firstRow.cloneNode(true);
+
+            // Reset input fields in the new row
+            newRow.querySelector(".item-select").value = "";
+            newRow.querySelector(".quantity-input").value = "";
+            newRow.querySelector(".selling-price").value = "";
+            newRow.querySelector(".row-total").value = "";
+
+            // Remove any extra "Remove" buttons
+            let existingRemoveButtons = newRow.querySelectorAll(".remove-btn");
+            existingRemoveButtons.forEach((btn, index) => {
+                if (index > 0) btn.remove(); // Keep only one button
+            });
+
+            // Ensure there is exactly ONE "Remove" button
+            let removeCell = newRow.querySelector("td:last-child");
+            if (!removeCell || !removeCell.querySelector(".remove-btn")) {
+                let removeButton = document.createElement("button");
+                removeButton.innerText = "Remove";
+                removeButton.type = "button";
+                removeButton.className = "remove-btn";
+                removeButton.onclick = function() { removeItemRow(this); };
+                removeCell.appendChild(removeButton);
+            }
+
+            table.appendChild(newRow);
+        }
+
+        function removeItemRow(button) {
+            let row = button.closest("tr");
+            let table = document.getElementById("sale-items");
+            if (table.rows.length > 2) {
+                row.remove();
+                updateTotalAmount();
+            }
+        }
+
+        // Set current date to the sale_date input
+        window.onload = function() {
+            var currentDate = new Date().toISOString().split('T')[0];
+            document.getElementById("sale_date").value = currentDate;
+        };
+    </script>
+</head>
+<body>
+
+    <!-- Dashboard Button -->
+    <a href="{% url 'dashboard' %}" class="dashboard-btn">Dashboard</a>
+
+    <h2>Create Sale</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label for="sale_date">Sale Date:</label>
+        <input type="text" name="sale_date" id="sale_date" readonly>
+
+        <label for="branch">Select Branch (Optional):</label>
+        <select name="branch" id="branch">
+            <option value="">-- No Branch --</option>
+            {% for branch in branches %}
+                <option value="{{ branch.id }}">{{ branch.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="customer">Select Customer (Optional):</label>
+        <select name="customer" id="customer">
+            <option value="">-- Walk-in Customer --</option>
+            {% for customer in customers %}
+                <option value="{{ customer.id }}">{{ customer.name }}</option>
+            {% endfor %}
+        </select>
+
+        <table id="sale-items">
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Selling Price</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+            <tr class="sale-item-row">
+                <td>
+                    <select name="item[]" class="item-select" onchange="updateSellingPrice(this)" required>
+                        <option value="">-- Select Item --</option>
+                        {% for item in inventory_items %}
+                            <option value="{{ item.id }}" data-price="{{ item.selling_cost }}">{{ item.item_name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><input type="number" name="quantity[]" class="quantity-input" oninput="updateRowTotal(this)" min="1" required></td>
+                <td><input type="text" name="selling_price[]" class="selling-price" readonly></td>
+                <td><input type="text" class="row-total" readonly></td>
+                <td><button type="button" class="remove-btn" onclick="removeItemRow(this)">Remove</button></td>
+            </tr>
+        </table>
+
+        <button type="button" onclick="addItemRow()">Add Item</button>
+
+        <label>Total Amount:</label>
+        <input type="text" name="total_amount" id="total_amount" readonly>
+
+        <label>Amount Paid:</label>
+        <input type="number" name="amount_paid" id="amount_paid" oninput="updateBalance()" required>
+
+        <label>Balance:</label>
+        <input type="text" id="balance" readonly>
+
+        <button type="submit">Complete Sale</button>
+    </form>
+
+    <a href="{% url 'sales:sale_list' %}" class="btn btn-primary">Back to List</a>
+
+</body>
+</html>

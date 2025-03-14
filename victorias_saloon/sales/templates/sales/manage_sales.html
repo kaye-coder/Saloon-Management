@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Sales</title>
+</head>
+<body>
+    <h1>Manage Sales</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Sale ID</th>
+                <th>Branch</th>
+                <th>Customer</th>
+                <th>Total Price</th>
+                <th>Total Paid</th>
+                <th>Balance</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+            <tr>
+                <td>{{ sale.id }}</td>
+                <td>{{ sale.branch.name if sale.branch else "N/A" }}</td>
+                <td>{{ sale.customer.name if sale.customer else "N/A" }}</td>
+                <td>{{ sale.total_price }}</td>
+                <td>{{ sale.total_paid|default:0 }}</td>
+                <td>{{ sale.balance|default:sale.total_price }}</td>
+                <td>{{ sale.date|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Total Sales Value: {{ total_sales_value }}</p>
+    <p>Total Paid Value: {{ total_paid_value }}</p>
+    <p>Sales Today: {{ sales_today }}</p>
+</body>
+</html>

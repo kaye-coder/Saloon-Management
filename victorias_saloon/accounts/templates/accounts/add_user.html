@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+</head>
+<body>
+    <h1>Add New User</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <h2>User Details</h2>
+        {{ user_form.as_p }}
+
+        <h2>Assign Permissions</h2>
+        {{ permission_form.as_p }}
+
+        <button type="submit">Create User</button>
+    </form>
+
+    <br>
+    <a href="{% url 'manage_users' %}">Back to Manage Users</a>
+</body>
+</html>

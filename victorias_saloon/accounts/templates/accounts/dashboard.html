@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Victorious Salon</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Load static files -->
+    {% load static %}
+    <style>
+        body {
+            background-image: url("{% static 'images/background.jpg' %}"); /* Reference the static image */
+            background-size: cover; /* Ensures the image covers the entire background */
+            background-position: center; /* Keeps the image centered */
+            font-family: 'Arial', sans-serif;
+            color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .grid-item {
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            font-size: 1.3rem;
+            color: white;
+            transition: all 0.3s ease-in-out;
+            animation: fadeIn 1s ease-in-out;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-item a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+        }
+
+        .btn-custom {
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            display: block;
+            transition: background-color 0.3s, transform 0.3s;
+            text-align: center;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            transform: scale(1.1);
+        }
+
+        /* Button color variations */
+        .btn-employees {
+            background-color: #2980b9; /* Calming blue */
+        }
+
+        .btn-positions {
+            background-color: #e91e63; /* Pink */
+        }
+
+        .btn-customers {
+            background-color: #e67e22; /* Warm orange */
+        }
+
+        .btn-suppliers {
+            background-color: #27ae60; /* Fresh green */
+        }
+
+        .btn-branches {
+            background-color: #8e44ad; /* Rich purple */
+        }
+
+        .btn-units {
+            background-color: #f39c12; /* Bold yellow */
+        }
+
+        .btn-categories {
+            background-color: #c0392b; /* Strong red */
+        }
+
+        .btn-inventory {
+            background-color: #16a085; /* Teal */
+        }
+
+        .btn-sales {
+            background-color: #d35400; /* Deep orange */
+        }
+
+        .btn-purchases {
+            background-color: #34495e; /* Darker gray */
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #8e44ad, #2c3e50);
+            color: white;
+            font-size: 2rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .card-body h2 {
+            color: #fff;
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Adds shadow for better visibility */
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Expanding button animation */
+        .expand-button {
+            transform: scale(1);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .expand-button.clicked {
+            transform: scale(1.2); /* Expands the button */
+        }
+
+        /* Smooth page transition */
+        .transition-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .transition-container a {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on small screens */
+                gap: 20px;
+            }
+
+            .grid-item {
+                padding: 15px;
+                font-size: 1.1rem;
+            }
+
+            .card-body h2 {
+                font-size: 2.5rem; /* Adjust header size */
+            }
+
+            .btn-custom {
+                font-size: 1rem; /* Adjust button text size */
+                padding: 15px;
+            }
+
+            .btn-custom:hover {
+                transform: scale(1.05); /* Reduce hover effect on mobile */
+            }
+        }
+
+        /* Smaller screens (extra mobile responsiveness) */
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr; /* 1 column on very small screens */
+                gap: 15px;
+            }
+
+            .grid-item {
+                padding: 10px;
+                font-size: 1rem;
+            }
+
+            .card-body h2 {
+                font-size: 2rem; /* Smaller font for header on very small screens */
+            }
+
+            .btn-custom {
+                font-size: 0.9rem; /* Smaller font size for buttons on very small screens */
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                Welcome, {{ user.username }}
+            </div>
+            <div class="card-body">
+                <h2>Dashboard</h2> <!-- Visible dashboard title -->
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <a href="/employees" class="btn-custom btn-employees expand-button" onclick="expandButton(this)">Employees</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/customers" class="btn-custom btn-customers expand-button" onclick="expandButton(this)">Customers</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/suppliers" class="btn-custom btn-suppliers expand-button" onclick="expandButton(this)">Suppliers</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/positions" class="btn-custom btn-positions expand-button" onclick="expandButton(this)">Positions</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/branches" class="btn-custom btn-branches expand-button" onclick="expandButton(this)">Branches</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/units" class="btn-custom btn-units expand-button" onclick="expandButton(this)">Units</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/categories" class="btn-custom btn-categories expand-button" onclick="expandButton(this)">Categories</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/inventory" class="btn-custom btn-inventory expand-button" onclick="expandButton(this)">Inventory</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/sales" class="btn-custom btn-sales expand-button" onclick="expandButton(this)">Sales</a>
+                    </div>
+                    <div class="grid-item">
+                        <a href="/purchases" class="btn-custom btn-purchases expand-button" onclick="expandButton(this)">Purchases</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function expandButton(button) {
+            button.classList.add('clicked'); // Add class to expand the button
+            setTimeout(function() {
+                window.location.href = button.getAttribute('href'); // Navigate after animation
+            }, 500); // After 0.5s delay, navigate to the link
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!-- create_purchase.html in the templates/purchases folder -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Purchase</title>
+</head>
+<body>
+    <h2>Create Purchase</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Save Purchase</button>
+    </form>
+
+    <hr>
+    <a href="{% url 'purchases:list' %}">
+        <button type="button">Back to Purchases List</button>
+    </a>
+</body>
+</html>

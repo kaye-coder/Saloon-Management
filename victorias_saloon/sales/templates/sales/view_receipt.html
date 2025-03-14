@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victorious Saloon - Receipt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            .receipt-container {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #000;
+                font-family: 'Courier New', monospace;
+                background: #fff;
+            }
+        }
+
+        .receipt-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            border: 2px solid #000;
+            background: #fff;
+        }
+
+        .receipt-header, .receipt-footer {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid #000;
+            text-align: left;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .total {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            border-top: 2px solid #000;
+            padding-top: 5px;
+        }
+    </style>
+    <script>
+        function printReceipt() {
+            window.print();
+        }
+        // Removed the JavaScript that sets the current date
+        // so that the sale's creation date is used instead.
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="receipt-container">
+            <div class="receipt-header">
+                <h3>Victoria's Saloon</h3>
+                <p><strong>Customer:</strong> {{ sale.customer.name }}</p>
+                <p><strong>Branch:</strong> {{ sale.branch.name }}</p>
+                <!-- Display the sale creation date and time -->
+                <p><strong>Date:</strong> {{ sale.sale_date|date:"Y-m-d H:i:s" }}</p>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sale.sale_items.all %}
+                        <tr>
+                            <td>{{ item.item.item_name }}</td>
+                            <td>{{ item.quantity_sold }}</td>
+                            <td>{{ item.selling_price }}</td>
+                            <td>{{ item.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p class="total"><strong>Total:</strong> {{ sale.total_price }}</p>
+            <p class="total"><strong>Paid:</strong> {{ sale.paid }}</p>
+            <p class="total"><strong>Balance:</strong> {{ sale.balance }}</p>
+
+            <div class="receipt-footer">
+                <p>Thank you for shopping with us!</p>
+            </div>
+        </div>
+
+        <div class="no-print text-center mt-3">
+            <a href="{% url 'sales:sale_list' %}" class="btn btn-primary">Back to List</a>
+            <a href="{% url 'sales:create_sale' %}" class="btn btn-secondary">Create Sale</a>
+            <button class="btn btn-info" onclick="printReceipt()">Print</button>
+        </div>
+    </div>
+</body>
+</html>

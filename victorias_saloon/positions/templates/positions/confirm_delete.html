@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Position - Victorious Saloon</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .warning {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            text-align: center;
+        }
+
+        .action-buttons button,
+        .action-buttons a {
+            padding: 10px 20px;
+            margin: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .action-buttons button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .action-buttons button:hover {
+            background-color: #c82333;
+        }
+
+        .action-buttons a {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .action-buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Victorious Saloon</h1>
+    </header>
+
+    <div class="container">
+        <h2>Delete Position</h2>
+        <p class="warning">Are you sure you want to delete this position?</p>
+        <p><strong>Position:</strong> {{ position.title }}</p>
+
+        <div class="action-buttons">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit">Yes, Delete</button>
+            </form>
+            <a href="{% url 'positions:position_list' %}">Cancel</a>
+        </div>
+    </div>
+
+</body>
+</html>
