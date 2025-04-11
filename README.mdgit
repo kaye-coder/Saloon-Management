@@ -1,1 +1,28 @@
-"# Saloon-Management"  initgit add README.mdgit commit -m "first commit"git branch -M maingit remote add origin https://github.com/kaye-coder/Saloon-Management.gitgit push -u origin main
+# Victoria's Saloon Management System
+
+Victoria's Saloon Management System is a web-based application designed to streamline and automate saloon operations, including inventory, sales, purchases, and user management. The system provides a user-friendly interface with role-based access control to ensure smooth business operations.
+
+## Features
+
+### Sales Management
+- Process multiple sales in a single transaction.
+- Automatically generates a receipt with date, time, items, total, paid amount, and balance.
+- Update payments and track pending balances.
+- Inventory updates automatically after sales.
+- Sales records are stored separately for security.
+
+### Inventory & Purchase Management
+- Manage products, categories, and stock levels.
+- Supports bulk purchases and updates inventory pricing accordingly.
+- Tracks supplier details and purchase history.
+
+### User Management & Security
+- Admin can create and manage users with specific permissions (read, write, edit, delete).
+- Each user has a personalized dashboard based on their assigned roles.
+- Superuser/admin has full control over all sections.
+- Secure login system that restricts direct access to pages without authentication.
+
+### Responsive Dashboard
+- Dynamic layout with user role-based button visibility.
+- Custom background, centered content, and styled buttons based on user roles (Admin, Manager, Employee).
+- Mobile-friendly with animations and smooth navigation.
